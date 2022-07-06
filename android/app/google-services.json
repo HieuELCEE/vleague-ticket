@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "79477247464",
+    "project_id": "vleague-ticket",
+    "storage_bucket": "vleague-ticket.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:79477247464:android:92d7acd90449d6f956a85d",
+        "android_client_info": {
+          "package_name": "com.example.vleague_ticket_v2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "79477247464-ebm2100l5a7pem830qmskr55l8re818k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2RPialBj-TTuJxCdDhz0nKr8ONiTjzho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "79477247464-ebm2100l5a7pem830qmskr55l8re818k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "79477247464-62e57jei3ra9r0js39cmigj1mgop4f2o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.vleagueTicketV2"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
