@@ -8,12 +8,25 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../providers/momo_service.dart';
 import '../providers/cart.dart';
 import '../providers/resultcode.dart';
+import '../providers/notification_service.dart';
 
 bool _initialUriIsHandled = false;
+
+// const AndroidNotificationChannel channel = AndroidNotificationChannel(
+//   'high_importance_channel',
+//   'High Importance Notification',
+//   description: "This channel is used for importance notification",
+//   importance: Importance.max,
+// );
+//
+// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+// FlutterLocalNotificationsPlugin();
 
 class PaymentScreen extends StatefulWidget {
   static const routeName = '/payment_screen';
@@ -41,6 +54,25 @@ class _PaymentScreenState extends State<PaymentScreen>
     // _handleInitialUri();
     _handleIncomingLinks();
     // _getResultCode();
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   RemoteNotification? notification = message.notification;
+    //   AndroidNotification? androidNotification = message.notification?.android;
+    //   if (notification != null && androidNotification != null) {
+    //     flutterLocalNotificationsPlugin.show(
+    //         notification.hashCode,
+    //         notification.title,
+    //         notification.body,
+    //         NotificationDetails(
+    //             android: AndroidNotificationDetails(
+    //               channel.id,
+    //               channel.name,
+    //               channelDescription: channel.description,
+    //               color: Colors.blue,
+    //               playSound: true,
+    //               icon: '@mimap/ic_launcher',
+    //             )));
+    //   }
+    // });
     if (Platform.isAndroid) WebView.platform = AndroidWebView();
   }
 
@@ -122,6 +154,7 @@ class _PaymentScreenState extends State<PaymentScreen>
     var cart = Provider.of<Cart>(context);
     var code = Provider.of<ResultCode>(context);
     var launchMomo = Provider.of<MomoService>(context).launchUrl;
+    var notification = Provider.of<NotificationService>(context, listen: false);
     WebViewController controller;
     return SafeArea(
       child: WebView(
@@ -140,6 +173,9 @@ class _PaymentScreenState extends State<PaymentScreen>
             print('RESULT CODE AFTER: $_resultCode');
             if (_resultCode == 0) {
               cart.clearCart();
+              notification.sendNotification();
+            } else {
+              notification.sendErrorNotification();
             }
             Navigator.of(context).pop();
             return NavigationDecision.navigate;

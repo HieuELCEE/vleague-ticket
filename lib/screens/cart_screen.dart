@@ -6,7 +6,7 @@ import '../providers/cart.dart';
 import '../providers/orders.dart';
 import '../providers/momo_service.dart';
 import '../providers/resultcode.dart';
-
+import '../providers/notification_service.dart';
 
 //WIDGET
 import '../widgets/cart_item.dart';
@@ -20,6 +20,7 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context, listen: true);
     final momo = Provider.of<MomoService>(context);
+    final notification = Provider.of<NotificationService>(context, listen: false);
     bool isEmpty = cart.itemCount == 0;
     return isEmpty
         ? Center(
