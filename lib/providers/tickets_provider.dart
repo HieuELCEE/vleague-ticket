@@ -44,6 +44,7 @@ class TicketsProvider with ChangeNotifier {
         options: buildCacheOptions(
           Duration(minutes: 30),
           maxStale: Duration(minutes: 30),
+          forceRefresh: true,
         ),
       );
       if (dioResponse.statusCode == 200) {

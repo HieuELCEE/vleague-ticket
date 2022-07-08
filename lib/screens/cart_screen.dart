@@ -4,8 +4,13 @@ import 'package:provider/provider.dart';
 //PROVIDER
 import '../providers/cart.dart';
 import '../providers/orders.dart';
+import '../providers/momo_service.dart';
+import '../providers/resultcode.dart';
+
+
 //WIDGET
 import '../widgets/cart_item.dart';
+import '../screens/payment_screen.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart_screen';
@@ -13,77 +18,74 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<Cart>(context);
+    final cart = Provider.of<Cart>(context, listen: true);
+    final momo = Provider.of<MomoService>(context);
     bool isEmpty = cart.itemCount == 0;
-    return isEmpty ? Center(child: Text('No item in your cart'),) : Column(
-      children: [
-        Expanded(
-          child: ListView.builder(
-            itemCount: cart.items.length,
-            itemBuilder: (ctx, index) {
-              return CartItemWidget(
-                id: cart.items.values.toList()[index].id,
-                productId: cart.items.keys.toList()[index],
-                title: cart.items.values.toList()[index].title,
-                price: cart.items.values.toList()[index].price,
-                quantity: cart.items.values.toList()[index].quantity,
-              );
-            },
-          ),
-        ),
-        Card(
-          margin: EdgeInsets.all(15),
-          elevation: 6,
-          child: Padding(
-            padding: EdgeInsets.all(8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  'Total:',
-                  style: TextStyle(
-                    fontSize: 20,
+    return isEmpty
+        ? Center(
+            child: Text('No item in your cart'),
+          )
+        : Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: cart.items.length,
+                  itemBuilder: (ctx, index) {
+                    return CartItemWidget(
+                      id: cart.items.values.toList()[index].id,
+                      productId: cart.items.keys.toList()[index],
+                      title: cart.items.values.toList()[index].title,
+                      price: cart.items.values.toList()[index].price,
+                      quantity: cart.items.values.toList()[index].quantity,
+                    );
+                  },
+                ),
+              ),
+              Card(
+                margin: EdgeInsets.all(15),
+                elevation: 6,
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        'Total:',
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                      Spacer(),
+                      if (cart.items.length != 0)
+                        Chip(
+                          label: Text(
+                            '\$${cart.totalAmount.toStringAsFixed(2)}',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          backgroundColor: Theme.of(context).primaryColor,
+                        )
+                      else
+                        Chip(
+                          label: Text(
+                            '\$${cart.totalAmount}',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          backgroundColor: Colors.white,
+                          shape: StadiumBorder(side: BorderSide()),
+                        ),
+                    ],
                   ),
                 ),
-                Spacer(),
-                if (cart.items.length != 0)
-                  Chip(
-                    label: Text(
-                      '\$${cart.totalAmount.toStringAsFixed(2)}',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    backgroundColor: Theme.of(context).primaryColor,
-                  )
-                else
-                  Chip(
-                    label: Text(
-                      '\$${cart.totalAmount}',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    backgroundColor: Colors.white,
-                    shape: StadiumBorder(side: BorderSide()),
-                  ),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        if (cart.items.length == 0)
-          OutlinedButton(
-            onPressed: () {},
-            child: Text('ORDER NOW'),
-            style: OutlinedButton.styleFrom(
-                primary: Theme.of(context).primaryColor),
-          )
-        else
-          OrderButton(cart: cart),
-        SizedBox(
-          height: 10,
-        ),
-      ],
-    );
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              OrderButton(cart: cart, momo: momo, info: 'Ticket'),
+              SizedBox(
+                height: 10,
+              ),
+            ],
+          );
   }
 }
 
@@ -91,9 +93,13 @@ class OrderButton extends StatefulWidget {
   const OrderButton({
     Key? key,
     required this.cart,
+    required this.momo,
+    required this.info,
   }) : super(key: key);
 
+  final MomoService momo;
   final Cart cart;
+  final String info;
 
   @override
   State<OrderButton> createState() => _OrderButtonState();
@@ -104,6 +110,7 @@ class _OrderButtonState extends State<OrderButton> {
 
   @override
   Widget build(BuildContext context) {
+    final code = Provider.of<ResultCode>(context, listen: true);
     return ElevatedButton(
       onPressed: (widget.cart.totalAmount <= 0 || _isLoading)
           ? null
@@ -111,18 +118,22 @@ class _OrderButtonState extends State<OrderButton> {
               setState(() {
                 _isLoading = true;
               });
-              await Provider.of<Orders>(context, listen: false).addOrder(
-                  widget.cart.items.values.toList(), widget.cart.totalAmount);
+              int statusCode = await widget.momo
+                  .createRequest(widget.cart.totalAmount.toInt(), widget.info);
               setState(() {
                 _isLoading = false;
               });
-              widget.cart.clearCart();
+
+              if (statusCode == 200) {
+                var momoUrl = widget.momo.launchUrl;
+                Navigator.of(context).pushNamed(PaymentScreen.routeName);
+              }
             },
       child: _isLoading
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : Text('ORDER NOW'),
+          : Text('CHECK OUT'),
       style: ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
     );
   }

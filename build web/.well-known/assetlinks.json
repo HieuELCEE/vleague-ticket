@@ -1,0 +1,9 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.example.vleague_ticket_v2",
+    "sha256_cert_fingerprints":
+    ["D9:F4:CC:6B:0E:54:48:06:7A:53:7E:57:0F:53:52:96:89:D9:EF:20:15:D4:B6:59:A2:13:17:F8:B9:69:B6:C2"]
+  }
+}]

@@ -80,7 +80,7 @@ class _MatchesListViewState extends State<MatchesListView> {
                     onTap: () {
                       _controller.clear();
                       changeString('');
-                      FocusScope.of(context).requestFocus(FocusNode());
+                      FocusScope.of(context).unfocus();
                     },
                   )
                       : null,
@@ -94,6 +94,7 @@ class _MatchesListViewState extends State<MatchesListView> {
                 },
               ),
             ),
+            matches.length == 0 ? Center(child: Text('Match Not Found', style: TextStyle(color: Colors.red),),) :
             Expanded(
               child: ListView.builder(
                 itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
