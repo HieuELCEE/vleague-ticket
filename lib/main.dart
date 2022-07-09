@@ -1,12 +1,9 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:app_links/app_links.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/services.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'web_url_protocol.dart'
@@ -58,7 +55,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   var initializationSettingsAndroid =
-  new AndroidInitializationSettings('@mipmap/ic_launcher');
+      new AndroidInitializationSettings('@mipmap/ic_launcher');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -85,27 +82,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // Uri? _initialUri;
-  // Uri? _latestUri;
-  // Object? _err;
-  // int? _resultCode;
-
-  // StreamSubscription? _sub;
   final _scaffoldKey = GlobalKey();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // _handleIncomingLinks();
-    // _handleInitialUri();
     if (Platform.isAndroid) WebView.platform = AndroidWebView();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
       AndroidNotification? androidNotification = message.notification?.android;
       if (notification != null && androidNotification != null) {
-        print('ARE YOU THERE');
         flutterLocalNotificationsPlugin.show(
             notification.hashCode,
             notification.title,
@@ -117,7 +104,8 @@ class _MyAppState extends State<MyApp> {
               channelDescription: channel.description,
               color: Colors.blue,
               playSound: true,
-                  icon: "@mipmap/ic_launcher",
+              icon: "@mipmap/ic_launcher",
+              styleInformation: BigTextStyleInformation(''),
             )));
       }
     });
@@ -141,10 +129,7 @@ class _MyAppState extends State<MyApp> {
             });
       }
     });
-
   }
-
-
 
   // @override
   // void dispose() {

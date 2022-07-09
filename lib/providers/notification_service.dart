@@ -15,7 +15,7 @@ class NotificationService with ChangeNotifier {
           "subject": "V-league Ticket Message",
           "token": '$fcmToken',
           "content":
-              "Purchase successful. Please wait check your email to receive QR Ticket"
+              "Thank you.\nYour purchase was successful.\nPlease check your email to receive QR Ticket!"
         }));
   }
 

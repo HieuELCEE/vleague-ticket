@@ -2,14 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:flutter/services.dart';
 import 'package:uni_links/uni_links.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../providers/momo_service.dart';
 import '../providers/cart.dart';
@@ -17,16 +13,6 @@ import '../providers/resultcode.dart';
 import '../providers/notification_service.dart';
 
 bool _initialUriIsHandled = false;
-
-// const AndroidNotificationChannel channel = AndroidNotificationChannel(
-//   'high_importance_channel',
-//   'High Importance Notification',
-//   description: "This channel is used for importance notification",
-//   importance: Importance.max,
-// );
-//
-// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-// FlutterLocalNotificationsPlugin();
 
 class PaymentScreen extends StatefulWidget {
   static const routeName = '/payment_screen';
@@ -39,7 +25,6 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen>
     with SingleTickerProviderStateMixin {
-  Uri? _initialUri;
   Uri? _latestUri;
   Object? _err;
   int? _resultCode = 1;
@@ -51,28 +36,7 @@ class _PaymentScreenState extends State<PaymentScreen>
   void initState() {
     // TODO: implement initState
     super.initState();
-    // _handleInitialUri();
     _handleIncomingLinks();
-    // _getResultCode();
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    //   RemoteNotification? notification = message.notification;
-    //   AndroidNotification? androidNotification = message.notification?.android;
-    //   if (notification != null && androidNotification != null) {
-    //     flutterLocalNotificationsPlugin.show(
-    //         notification.hashCode,
-    //         notification.title,
-    //         notification.body,
-    //         NotificationDetails(
-    //             android: AndroidNotificationDetails(
-    //               channel.id,
-    //               channel.name,
-    //               channelDescription: channel.description,
-    //               color: Colors.blue,
-    //               playSound: true,
-    //               icon: '@mimap/ic_launcher',
-    //             )));
-    //   }
-    // });
     if (Platform.isAndroid) WebView.platform = AndroidWebView();
   }
 
@@ -104,16 +68,13 @@ class _PaymentScreenState extends State<PaymentScreen>
     if (!kIsWeb) {
       _sub = uriLinkStream.listen((Uri? uri) {
         if (!mounted) return;
-        print('got uri: $uri');
         setState(() {
           _latestUri = uri;
           _err = null;
           _resultCode = _getResultCode();
         });
-        print('RESULT CODE: $_resultCode');
       }, onError: (Object err) {
         if (!mounted) return;
-        print('got err: $err');
         setState(() {
           _latestUri = null;
           if (err is FormatException) {
@@ -125,29 +86,6 @@ class _PaymentScreenState extends State<PaymentScreen>
       });
     }
   }
-
-  // Future<void> _handleInitialUri() async {
-  //   if (!_initialUriIsHandled) {
-  //     _initialUriIsHandled = true;
-  //     try {
-  //       final uri = await getInitialUri();
-  //       if (uri == null) {
-  //         print('no initial uri');
-  //       } else {
-  //         print('got initial uri: $uri');
-  //       }
-  //       if (!mounted) return;
-  //       setState(() => _initialUri = uri);
-  //     } on PlatformException {
-  //       // Platform messages may fail but we ignore the exception
-  //       print('falied to get initial uri');
-  //     } on FormatException catch (err) {
-  //       if (!mounted) return;
-  //       print('malformed initial uri');
-  //       setState(() => _err = err);
-  //     }
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +100,6 @@ class _PaymentScreenState extends State<PaymentScreen>
           initialUrl: launchMomo,
           onWebViewCreated: (WebViewController webViewController) async {
             controller = webViewController;
-            print('CONTROLLER: ${controller.currentUrl()}');
           },
           navigationDelegate: (NavigationRequest request) async {
             if (request.url.startsWith('momo://?action=payWithAppToken')) {
@@ -170,7 +107,6 @@ class _PaymentScreenState extends State<PaymentScreen>
               return NavigationDecision.prevent;
             }
             code.resultCode = _resultCode!;
-            print('RESULT CODE AFTER: $_resultCode');
             if (_resultCode == 0) {
               cart.clearCart();
               notification.sendNotification();
