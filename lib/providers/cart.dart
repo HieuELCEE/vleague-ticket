@@ -17,6 +17,7 @@ class CartItem {
 
 class Cart with ChangeNotifier {
   Map<String, CartItem>? _items = {};
+  late double _total;
 
   Map<String, CartItem> get items {
     return {...?_items};
@@ -33,6 +34,16 @@ class Cart with ChangeNotifier {
     _items!.forEach((key, cartItem) {
       total += cartItem.price * cartItem.quantity;
     });
+    return total;
+  }
+
+  double get total {
+    var total = 0.0;
+    _items!.forEach((key, cartItem) {
+      total += cartItem.price * cartItem.quantity;
+    });
+    _total = total;
+    notifyListeners();
     return total;
   }
 

@@ -64,6 +64,12 @@ class _TabsScreenState extends State<TabsScreen> {
           _isChosen2 = true;
           _isChosen3 = false;
         });
+      } else if (_selectedPageIndex == 2) {
+        setState(() {
+          _isChosen1 = false;
+          _isChosen2 = false;
+          _isChosen3 = true;
+        });
       }
     }
     _isInit = false;

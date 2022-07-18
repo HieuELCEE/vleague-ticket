@@ -32,6 +32,7 @@ class TicketsProvider with ChangeNotifier {
       // } else {
       //   print('An error occurred');
       // }
+      print('MATCH ID: $matchId');
       var options = BaseOptions(
         baseUrl: 'http://localhost:8081/api/v1/',
       );
@@ -44,9 +45,9 @@ class TicketsProvider with ChangeNotifier {
         options: buildCacheOptions(
           Duration(minutes: 30),
           maxStale: Duration(minutes: 30),
-          forceRefresh: true,
         ),
       );
+      print(dioResponse);
       if (dioResponse.statusCode == 200) {
         print(dioResponse.data);
         _tickets = await parseAreasJson(dioResponse.data);
@@ -66,4 +67,5 @@ class TicketsProvider with ChangeNotifier {
     }
     return _tickets;
   }
+
 }

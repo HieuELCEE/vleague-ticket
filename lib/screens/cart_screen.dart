@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 //PROVIDER
 import '../providers/cart.dart';
-import '../providers/orders.dart';
 import '../providers/momo_service.dart';
 import '../providers/resultcode.dart';
 import '../providers/notification_service.dart';
@@ -12,10 +11,24 @@ import '../providers/notification_service.dart';
 import '../widgets/cart_item.dart';
 import '../screens/payment_screen.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   static const routeName = '/cart_screen';
   const CartScreen({Key? key}) : super(key: key);
 
+  @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  var _total;
+  @override
+  void initState() {
+    Future.delayed(Duration.zero).then((_) async{
+       _total = Provider.of<Cart>(context, listen: false).total;
+    });
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context, listen: true);

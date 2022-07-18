@@ -11,6 +11,11 @@ import '../providers/momo_service.dart';
 import '../providers/cart.dart';
 import '../providers/resultcode.dart';
 import '../providers/notification_service.dart';
+import '../providers/invoice_service.dart';
+import '../providers/page.dart';
+import '../screens/order_screen.dart';
+import '../screens/tabs_screen.dart';
+import '../models/cart_info.dart';
 
 bool _initialUriIsHandled = false;
 
@@ -47,18 +52,17 @@ class _PaymentScreenState extends State<PaymentScreen>
     _handleIncomingLinks();
   }
 
-
   @override
   void dispose() {
     _sub?.cancel();
     super.dispose();
   }
 
-  int _getResultCode () {
+  int _getResultCode() {
     String url = _latestUri.toString();
     var splitter = url.split('&');
-    var strResultCode = splitter.firstWhere((element) =>
-        element.contains('resultCode'));
+    var strResultCode =
+        splitter.firstWhere((element) => element.contains('resultCode'));
     var strResultCodeValue = strResultCode.split('=');
     var strValue = strResultCodeValue[1];
     return int.parse(strValue);
@@ -89,34 +93,41 @@ class _PaymentScreenState extends State<PaymentScreen>
 
   @override
   Widget build(BuildContext context) {
-    var cart = Provider.of<Cart>(context);
+    var cart = Provider.of<Cart>(context, listen: true);
     var code = Provider.of<ResultCode>(context);
     var launchMomo = Provider.of<MomoService>(context).launchUrl;
+    var page = Provider.of<PageProvider>(context);
     var notification = Provider.of<NotificationService>(context, listen: false);
+    var invoiceService = Provider.of<InvoiceProvider>(context, listen: false);
     WebViewController controller;
     return SafeArea(
       child: WebView(
-          javascriptMode: JavascriptMode.unrestricted,
-          initialUrl: launchMomo,
-          onWebViewCreated: (WebViewController webViewController) async {
-            controller = webViewController;
-          },
-          navigationDelegate: (NavigationRequest request) async {
-            if (request.url.startsWith('momo://?action=payWithAppToken')) {
-              await _launchURL(request.url);
-              return NavigationDecision.prevent;
-            }
-            code.resultCode = _resultCode!;
-            if (_resultCode == 0) {
-              cart.clearCart();
-              notification.sendNotification();
-            } else {
-              notification.sendErrorNotification();
-            }
+        javascriptMode: JavascriptMode.unrestricted,
+        initialUrl: launchMomo,
+        onWebViewCreated: (WebViewController webViewController) async {
+          controller = webViewController;
+        },
+        navigationDelegate: (NavigationRequest request) async {
+          if (request.url.startsWith('momo://?action=payWithAppToken')) {
+            await _launchURL(request.url);
+            return NavigationDecision.prevent;
+          }
+          code.resultCode = _resultCode!;
+          if (_resultCode == 0) {
+            List<CartInfo> cartInfo = [];
+            cart.items.forEach((key, value) {cartInfo.add(new CartInfo(quantity: value.quantity, ticketId: int.parse(key)));});
+            double totalAmount = cart.total;
+            cart.clearCart();
+            page.currPage = 2;
+            invoiceService.addInvoice(cartInfo, totalAmount);
+            notification.sendNotification();
+            Navigator.of(context).popAndPushNamed(TabsScreen.routeName, arguments: {'cartPage': 2});
+          } else {
+            notification.sendErrorNotification();
             Navigator.of(context).pop();
-            return NavigationDecision.navigate;
-          },
-        
+          }
+          return NavigationDecision.navigate;
+        },
       ),
     );
   }
@@ -128,6 +139,4 @@ class _PaymentScreenState extends State<PaymentScreen>
       throw 'Could not launch $url';
     }
   }
-
-
 }

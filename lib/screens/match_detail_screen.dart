@@ -232,7 +232,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                                 onPressed: () {
                                   page.currPage = 1;
                                   Navigator.of(context)
-                                      .pushNamed(TabsScreen.routeName, arguments: {'cartPage': 1});
+                                      .popAndPushNamed(TabsScreen.routeName, arguments: {'cartPage': 1});
                                 },
                                 child: Text('GO TO YOUR CART', style: TextStyle(fontWeight: FontWeight.bold),))),
                     Text(

@@ -20,10 +20,12 @@ import './providers/matches_provider.dart';
 import './providers/cart.dart';
 import './providers/tickets_provider.dart';
 import './providers/page.dart';
-import './providers/orders.dart';
 import './providers/momo_service.dart';
 import './providers/resultcode.dart';
 import './providers/notification_service.dart';
+import './providers/orders_provider.dart';
+import './providers/order_detail_provider.dart';
+import './providers/invoice_service.dart';
 
 /*SCREENS*/
 import './screens/auth_navigation_screen.dart';
@@ -34,6 +36,8 @@ import './screens/matches_screen.dart';
 import './screens/cart_screen.dart';
 import './screens/match_detail_screen.dart';
 import './screens/payment_screen.dart';
+import './screens/order_screen.dart';
+import './screens/order_detail_screen.dart';
 
 bool _initialUriIsHandled = false;
 
@@ -131,59 +135,6 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  // @override
-  // void dispose() {
-  //   _sub?.cancel();
-  //   super.dispose();
-  // }
-  //
-  // void _handleIncomingLinks() {
-  //   if (!kIsWeb) {
-  //     _sub = uriLinkStream.listen((Uri? uri) {
-  //       if (!mounted) return;
-  //       print('got uri: $uri');
-  //       setState(() {
-  //         _latestUri = uri;
-  //         _err = null;
-  //       });
-  //     }, onError: (Object err) {
-  //       if (!mounted) return;
-  //       print('got err: $err');
-  //       setState(() {
-  //         _latestUri = null;
-  //         if (err is FormatException) {
-  //           _err = err;
-  //         } else {
-  //           _err = null;
-  //         }
-  //       });
-  //     });
-  //   }
-  // }
-  //
-  // Future<void> _handleInitialUri() async {
-  //   if (!_initialUriIsHandled) {
-  //     _initialUriIsHandled = true;
-  //     try {
-  //       final uri = await getInitialUri();
-  //       if (uri == null) {
-  //         print('no initial uri');
-  //       } else {
-  //         print('got initial uri: $uri');
-  //       }
-  //       if (!mounted) return;
-  //       setState(() => _initialUri = uri);
-  //     } on PlatformException {
-  //       // Platform messages may fail but we ignore the exception
-  //       print('falied to get initial uri');
-  //     } on FormatException catch (err) {
-  //       if (!mounted) return;
-  //       print('malformed initial uri');
-  //       setState(() => _err = err);
-  //     }
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -193,10 +144,12 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (ctx) => Cart()),
         ChangeNotifierProvider(create: (ctx) => TicketsProvider()),
         ChangeNotifierProvider(create: (ctx) => PageProvider()),
-        ChangeNotifierProvider(create: (ctx) => Orders()),
         ChangeNotifierProvider(create: (ctx) => MomoService()),
         ChangeNotifierProvider(create: (ctx) => ResultCode()),
         ChangeNotifierProvider(create: (ctx) => NotificationService()),
+        ChangeNotifierProvider(create: (ctx) => OrdersProvider()),
+        ChangeNotifierProvider(create: (ctx) => OrderDetailProvider()),
+        ChangeNotifierProvider(create: (ctx) => InvoiceProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -217,6 +170,8 @@ class _MyAppState extends State<MyApp> {
           MatchDetailScreen.routeName: (ctx) => MatchDetailScreen(),
           TabsScreen.routeName: (ctx) => TabsScreen(),
           PaymentScreen.routeName: (ctx) => PaymentScreen(),
+          OrderScreen.routeName: (ctx) => OrderScreen(),
+          OrderDetailScreen.routeName: (ctx) => OrderDetailScreen(),
         },
       ),
     );
