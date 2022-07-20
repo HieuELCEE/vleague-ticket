@@ -13,6 +13,7 @@ import '../providers/resultcode.dart';
 import '../providers/notification_service.dart';
 import '../providers/invoice_service.dart';
 import '../providers/page.dart';
+import '../providers/email_service.dart';
 import '../screens/order_screen.dart';
 import '../screens/tabs_screen.dart';
 import '../models/cart_info.dart';
@@ -98,6 +99,7 @@ class _PaymentScreenState extends State<PaymentScreen>
     var launchMomo = Provider.of<MomoService>(context).launchUrl;
     var page = Provider.of<PageProvider>(context);
     var notification = Provider.of<NotificationService>(context, listen: false);
+    var email = Provider.of<EmailService>(context, listen: false);
     var invoiceService = Provider.of<InvoiceProvider>(context, listen: false);
     WebViewController controller;
     return SafeArea(
@@ -121,6 +123,7 @@ class _PaymentScreenState extends State<PaymentScreen>
             page.currPage = 2;
             invoiceService.addInvoice(cartInfo, totalAmount);
             notification.sendNotification();
+            email.sendEmail();
             Navigator.of(context).popAndPushNamed(TabsScreen.routeName, arguments: {'cartPage': 2});
           } else {
             notification.sendErrorNotification();

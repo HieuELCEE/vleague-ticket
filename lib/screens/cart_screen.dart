@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 //PROVIDER
 import '../providers/cart.dart';
@@ -31,6 +32,7 @@ class _CartScreenState extends State<CartScreen> {
   
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser!;
     final cart = Provider.of<Cart>(context, listen: true);
     final momo = Provider.of<MomoService>(context);
     final notification = Provider.of<NotificationService>(context, listen: false);

@@ -26,6 +26,7 @@ import './providers/notification_service.dart';
 import './providers/orders_provider.dart';
 import './providers/order_detail_provider.dart';
 import './providers/invoice_service.dart';
+import './providers/email_service.dart';
 
 /*SCREENS*/
 import './screens/auth_navigation_screen.dart';
@@ -150,6 +151,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (ctx) => OrdersProvider()),
         ChangeNotifierProvider(create: (ctx) => OrderDetailProvider()),
         ChangeNotifierProvider(create: (ctx) => InvoiceProvider()),
+        ChangeNotifierProvider(create: (ctx) => EmailService()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../providers/cart.dart';
+
 class GoogleAuth with ChangeNotifier {
   final _googleSignIn = GoogleSignIn();
 
@@ -57,6 +59,7 @@ class GoogleAuth with ChangeNotifier {
       _accessToken = null;
       await _googleSignIn.signOut();
       FirebaseAuth.instance.signOut();
+      Cart cart = new Cart();
       notifyListeners();
     } on PlatformException catch (e) {
       print(e);

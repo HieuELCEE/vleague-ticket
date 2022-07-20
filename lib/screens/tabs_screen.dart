@@ -99,6 +99,7 @@ class _TabsScreenState extends State<TabsScreen> {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser!;
     final provider = Provider.of<Cart>(context, listen: true);
+    final initPage = Provider.of<PageProvider>(context, listen: false);
     return Stack(
       children: [
         Scaffold(
@@ -141,6 +142,8 @@ class _TabsScreenState extends State<TabsScreen> {
                   PopupMenuItem(
                     child: ListTile(
                       onTap: () async {
+                        provider.clearCart();
+                        initPage.currPage = 0;
                         await Provider.of<GoogleAuth>(context, listen: false)
                             .logout();
                         Navigator.of(context).pop();
